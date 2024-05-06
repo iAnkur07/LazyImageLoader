@@ -23,7 +23,7 @@ class ImagesCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         postImageView.image = nil
-        postImageView.cancelRequest()
+        postImageView.cancelRequest(index: postImageView.tag)
     }
 
 }

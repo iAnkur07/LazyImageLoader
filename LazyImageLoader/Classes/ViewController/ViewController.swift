@@ -55,7 +55,11 @@ extension ViewController: UICollectionViewDelegate,
         
         let item = data[indexPath.item]
         cell.postImageView.image = nil
-        cell.postImageView.setImageFrom(url: item.url)
+        cell.postImageView.tag = indexPath.item
+        cell.postImageView.setImageFrom(url: item.url, index: indexPath.item) { image, index in
+            let cell = collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? ImagesCell
+            cell?.postImageView.image = image
+        }
         return cell
     }
     
@@ -78,7 +82,11 @@ extension ViewController {
                 if self.page == 0 {
                     self.data = data
                 } else {
-                    self.data.append(contentsOf: data)
+                    for item in data {
+                        if !self.data.contains(where: { $0.id == item.id }) {
+                            self.data.append(item)
+                        }
+                    }
                 }
                 
                 if data.count == 0 {

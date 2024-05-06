@@ -68,7 +68,8 @@ class ImagesCatch: NSObject {
     }
     
     func cancelLoad(_ uuid: UUID) {
-      runningRequests[uuid]?.cancel()
-      runningRequests.removeValue(forKey: uuid)
+        print("removed tasks: \(uuid.uuidString)")
+        runningRequests[uuid]?.cancel()
+        runningRequests.removeValue(forKey: uuid)
     }
 }

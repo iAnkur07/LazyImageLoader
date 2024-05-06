@@ -11,41 +11,42 @@ class ImageLoader {
     static let shared = ImageLoader()
     
     private let imageLoader = ImagesCatch()
-    private var uuidMap = [UIImageView: UUID]()
+    private var uuidMap = [Int: UUID]()
     
     private init() {}
     
-    func load(_ url: NSURL, for imageView: UIImageView) {
+    func load(_ url: NSURL, index: Int, completion: @escaping (UIImage?, Int) -> Void) {
         
         let token = ImagesCatch.publicCache.load(url: url, completion: { image in
             defer {
-                self.uuidMap.removeValue(forKey: imageView)
+                self.uuidMap.removeValue(forKey: index)
             }
             DispatchQueue.main.async {
-              imageView.image = image
+                completion(image, index)
             }
         })
 
          if let token = token {
-           uuidMap[imageView] = token
+           uuidMap[index] = token
          }
     }
     
-    func cancel(for imageView: UIImageView) {
-        if let uuid = uuidMap[imageView] {
+    func cancel(for index: Int) {
+        if let uuid = uuidMap[index] {
             imageLoader.cancelLoad(uuid)
-            uuidMap.removeValue(forKey: imageView)
+            
+            uuidMap.removeValue(forKey: index)
         }
     }
 }
 
 extension UIImageView {
-    func setImageFrom(url: String) {
+    func setImageFrom(url: String, index: Int, completion: @escaping (UIImage?, Int) -> Void) {
         let url = NSURL(string: url) ?? NSURL()
-        ImageLoader.shared.load(url, for: self)
+        ImageLoader.shared.load(url, index: index, completion: completion)
     }
     
-    func cancelRequest() {
-        ImageLoader.shared.cancel(for: self)
+    func cancelRequest(index: Int) {
+        ImageLoader.shared.cancel(for: index)
     }
 }
